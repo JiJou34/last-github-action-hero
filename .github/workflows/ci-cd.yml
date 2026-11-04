@@ -48,6 +48,13 @@ jobs:
         run: npm run build
         env:
           VITE_COMMIT: ${{ github.sha }} # déclaration d'une variable d'environnement accessible au runner
+      # Le site construit est ajouté à un aterfact github-pages
+      # Plus d'informations sur les paramètres : https://github.com/actions/upload-pages-artifact#inputs-
+      - id: artifact
+        name: Création d'artefact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
 
       # TODO CI - 6. Résumé 1ère mission -> Github Markdown
       - name: Rapport CI
@@ -70,19 +77,22 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
   # Phase 2 - CD
-  #cd:
-  #  needs: ci # Dépendance avec CI
-  #  if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
-  #  runs-on: ubuntu-26.04
-  #  permissions:
-  #    contents: read
-  #    pages: write # permet d'écrire pour déployer une "Github page"
-  #    id-token: write # permet de vérifier si le déploiement vient d'une source légitime
-  #  environment:
-  #    name: github-pages # récupération des variables d'environnement "github pages"
-  #    url: ${{ steps.deployment.outputs.page_url }}
-  #  steps:
+  cd:
+    needs: ci # Dépendance avec CI
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-26.04
+    permissions:
+      contents: read
+      pages: write # permet d'écrire pour déployer une "Github page"
+      id-token: write # permet de vérifier si le déploiement vient d'une source légitime
+    environment:
+      name: github-pages # récupération des variables d'environnement "github pages"
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       # TODO CD - 1. Rambo, derrière les lignes ennemies -> déploiement Github Page
+      - id: deployment # Déploiement automatique de l'artefact github-pages
+        name: Rambo - déploiement derrière les lignes ennemies
+        uses: actions/deploy-pages@v4
 
       # TODO CD - 2. Résumé 2ème mission -> Github Markdown
 
