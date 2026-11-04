@@ -37,6 +37,10 @@ jobs:
         name: Die Hard - Vérification statique - Lint
         run: npm run lint
       # TODO CI - 4. Terminator : tests unitaires
+      - id: test
+        name: Terminator - Tests unitaires
+        if: ${{ !cancelled() }}
+        run: npm test
 
       # TODO CI - 5. Commando : build
 
